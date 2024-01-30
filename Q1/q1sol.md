@@ -1,4 +1,5 @@
-### Q1. Fetch the following columns for completed order items for sales orders of SM_STORE product store and that are physical items.
+### QUESTION
+Q1. Fetch the following columns for completed order items for sales orders of SM_STORE product store and that are physical items.
     ORDER_ID
     ORDER_ITEM_SEQ_ID
     PRODUCT_ID
@@ -14,7 +15,7 @@
     PRODUCT_STORE_ID 
 
 ### SOLUTION: 
-
+```
 SELECT 
     oh.ORDER_ID,
     oi.ORDER_ITEM_SEQ_ID,
@@ -35,3 +36,6 @@ ON os.order_id = oi.order_id JOIN product p
 ON p.product_id = oi.product_id JOIN product_type pt
 ON pt.product_type_id = p.product_type_id
 WHERE oh.product_store_id = 'SM_STORE' AND pt.is_physical = 'Y' AND oh.order_type_id = 'Sales_Order' AND os.status_id = 'ITEM_COMPLETED';
+```
+
+![Alt text](image.png)
