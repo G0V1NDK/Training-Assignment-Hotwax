@@ -4,7 +4,7 @@ Fetch all the customers created in June 2023.
 
 ### SOLUTION:
 
-```
+```sql
 SELECT
     p.PARTY_ID,
     pr.ROLE_TYPE_ID,

@@ -3,7 +3,7 @@ Fetch the order id and contact mech id for the shipping address of the orders co
 
 ### SOLUTION:
 
-```
+```sql
 SELECT oh.order_id, ocm.contact_mech_id 
 FROM order_header oh 
 JOIN order_contact_mech ocm ON oh.order_id = ocm.order_id

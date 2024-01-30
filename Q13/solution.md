@@ -17,7 +17,7 @@ Fetch the following details for orders completed in August of 2023.
 
 ### SOLUTION:
 
-```
+```sql
 
 
 

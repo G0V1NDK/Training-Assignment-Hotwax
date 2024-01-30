@@ -1,5 +1,5 @@
 ### QUESTION
-Q1. Fetch the following columns for completed order items for sales orders of SM_STORE product store and that are physical items.
+Fetch the following columns for completed order items for sales orders of SM_STORE product store and that are physical items.
     ORDER_ID
     ORDER_ITEM_SEQ_ID
     PRODUCT_ID
@@ -15,7 +15,7 @@ Q1. Fetch the following columns for completed order items for sales orders of SM
     PRODUCT_STORE_ID 
 
 ### SOLUTION: 
-```
+```sql
 SELECT 
     oh.ORDER_ID,
     oi.ORDER_ITEM_SEQ_ID,

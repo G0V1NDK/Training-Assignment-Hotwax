@@ -4,7 +4,7 @@ Fetch the inventory variances of the products where the reason is ‘VAR_LOST’
 
 ### SOLUTION:
 
-```
+```sql
 
 SELECT
     INVENTORY_ITEM_ID,

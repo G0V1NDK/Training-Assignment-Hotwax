@@ -23,7 +23,7 @@ Fetch all the order items that are in the created status and the order type shou
 
 ### SOLUTION:
 
-```
+```sql
 
 
 

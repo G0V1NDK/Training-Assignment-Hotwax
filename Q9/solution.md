@@ -4,7 +4,7 @@ Find all the orders whose two or more items are canceled but the orders are stil
 
 ### SOLUTION:
 
-```
+```sql
 SELECT
     oi.ORDER_ID,
     COUNT(DISTINCT oi.ORDER_ITEM_SEQ_ID) AS CANCELLED_ITEMS

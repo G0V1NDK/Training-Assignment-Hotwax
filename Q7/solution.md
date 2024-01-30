@@ -4,7 +4,7 @@ Fetch all the physical items ordered in the month of September 2023.
 
 ### SOLUTION:
 
-```
+```sql
 SELECT oi.ORDER_ID, oi.ORDER_ITEM_SEQ_ID FROM order_item oi 
 JOIN order_status os ON oi.ORDER_ID = os.ORDER_ID and oi.ORDER_ITEM_SEQ_ID = os.ORDER_ITEM_SEQ_ID
 JOIN product p ON oi.product_id = p.product_id

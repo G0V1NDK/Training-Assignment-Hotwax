@@ -16,7 +16,7 @@ Get all the below fields
 
 ### SOLUTION:
 
-```
+```sql
 
 SELECT
     rh.RETURN_ID,

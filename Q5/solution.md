@@ -9,7 +9,7 @@ Fetch the following data for completed order items in July of 2023
 
 ### SOLUTION:
 
-```
+```sql
 SELECT
 	oi.ORDER_ID,
 	oi.ORDER_ITEM_SEQ_ID,

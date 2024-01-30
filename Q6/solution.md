@@ -4,7 +4,7 @@ Fetch all the physical items completed from Warehouse in September of 2023.
 
 ### SOLUTION:
 
-```
+```sql
 SELECT oi.ORDER_ID, oisga.order_item_seq_id FROM order_item oi
 JOIN order_item_ship_group_assoc oisga ON oi.order_id = oisga.order_id AND oi.order_item_seq_id = oisga.order_item_seq_id
 JOIN order_item_ship_group oisg ON oisga.ORDER_ID =oisg.ORDER_ID and oisga.SHIP_GROUP_SEQ_ID = oisg.SHIP_GROUP_SEQ_ID 
