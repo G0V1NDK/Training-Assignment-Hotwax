@@ -29,13 +29,13 @@ SELECT
     os.STATUS_ID,
     os.STATUS_DATETIME,
     oh.ORDER_TYPE_ID,
-    oh.PRODUCT_STORE_ID 
+    oh.PRODUCT_STORE_ID
 FROM order_header oh JOIN order_item oi
 ON oi.order_id = oh.order_id JOIN order_status os
 ON os.order_id = oi.order_id JOIN product p
 ON p.product_id = oi.product_id JOIN product_type pt
 ON pt.product_type_id = p.product_type_id
-WHERE oh.product_store_id = 'SM_STORE' AND pt.is_physical = 'Y' AND oh.order_type_id = 'Sales_Order' AND os.status_id = 'ITEM_COMPLETED';
+WHERE oh.product_store_id = 'SM_STORE' AND pt.is_physical = 'Y' AND oh.order_type_id = 'SALES_ORDER' AND os.status_id = 'ITEM_COMPLETED';
 ```
 
 ![Alt text](image.png)
