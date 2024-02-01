@@ -19,7 +19,30 @@ Fetch the following details for orders completed in August of 2023.
 
 ```sql
 
+SELECT
+	p.PRODUCT_ID,
+	p.PRODUCT_TYPE_ID,
+	oh.PRODUCT_STORE_ID,
+	oi.QUANTITY,
+	p.INTERNAL_NAME,
+	oisg.FACILITY_ID,
+	oh.EXTERNAL_ID,
+	f.FACILITY_TYPE_ID,
+	oht.ORDER_HISTORY_ID,
+	oh.ORDER_ID,
+	oi.ORDER_ITEM_SEQ_ID,
+	oisg.SHIP_GROUP_SEQ_ID 
+FROM order_header oh
+JOIN order_item oi ON oh.ORDER_ID = oi.ORDER_ID
+JOIN order_item_ship_group_assoc oisga ON oi.ORDER_ID = oisga.ORDER_ID AND oi.ORDER_ITEM_SEQ_ID = oisga.ORDER_ITEM_SEQ_ID 
+JOIN order_item_ship_group oisg ON oisga.ORDER_ID = oisg.ORDER_ID AND oisga.SHIP_GROUP_SEQ_ID = oisg.SHIP_GROUP_SEQ_ID 
+JOIN order_history oht ON oi.ORDER_ID = oht.ORDER_ID AND oi.ORDER_ITEM_SEQ_ID = oht.ORDER_ITEM_SEQ_ID 
+JOIN product p  ON oi.PRODUCT_ID = p.PRODUCT_ID 
+JOIN facility f ON oisg.FACILITY_ID = f.FACILITY_ID
+JOIN order_status os ON oh.ORDER_ID = os.ORDER_ID AND os.STATUS_ID = "ORDER_COMPLETED"
+WHERE EXTRACT(YEAR FROM os.status_datetime) = '2023' 
+AND EXTRACT(MONTH FROM os.status_datetime) = '8';
 
 
 ```
-
+![Alt text](image.png)
