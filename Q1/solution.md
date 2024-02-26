@@ -16,6 +16,7 @@ Fetch the following columns for completed order items for sales orders of SM_STO
 
 ### SOLUTION: 
 ```sql
+
 SELECT 
     oh.ORDER_ID,
     oi.ORDER_ITEM_SEQ_ID,
@@ -30,12 +31,16 @@ SELECT
     os.STATUS_DATETIME,
     oh.ORDER_TYPE_ID,
     oh.PRODUCT_STORE_ID
-FROM order_header oh JOIN order_item oi
-ON oi.order_id = oh.order_id JOIN order_status os
-ON os.order_id = oi.order_id JOIN product p
-ON p.product_id = oi.product_id JOIN product_type pt
-ON pt.product_type_id = p.product_type_id
-WHERE oh.product_store_id = 'SM_STORE' AND pt.is_physical = 'Y' AND oh.order_type_id = 'SALES_ORDER' AND os.status_id = 'ITEM_COMPLETED';
+FROM order_header oh 
+JOIN order_item oi ON oi.order_id = oh.order_id 
+JOIN order_status os ON os.order_id = oi.order_id AND os.order_item_seq_id = oi.order_item_seq_id AND os.status_id = 'ITEM_COMPLETED'
+JOIN product p ON p.product_id = oi.product_id 
+JOIN product_type pt ON pt.product_type_id = p.product_type_id
+WHERE oh.product_store_id = 'SM_STORE' AND pt.is_physical = 'Y' 
+AND oh.order_type_id = 'SALES_ORDER' AND oi.status_id = 'ITEM_COMPLETED';
+
 ```
 
 ![Alt text](image.png)
+
+![alt text](image-1.png)

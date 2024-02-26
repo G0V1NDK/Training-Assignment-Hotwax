@@ -12,7 +12,8 @@ Fetch the following columns for completed return items of SM_STORE for ecom retu
 
 ### SOLUTION:
 ```sql
-SELECT 
+
+SELECT
 	rh.RETURN_ID,
 	oh.ORDER_ID,
 	oh.PRODUCT_STORE_ID ,
@@ -22,13 +23,16 @@ SELECT
 	rh.RETURN_DATE ,
 	rh.ENTRY_DATE,
 	rh.RETURN_CHANNEL_ENUM_ID
-FROM return_header rh JOIN
-return_item ri ON rh.RETURN_ID = ri.RETURN_ID
-JOIN order_item oi ON ri.ORDER_ID = oi.ORDER_ID AND ri.ORDER_ITEM_SEQ_ID = oi.ORDER_ITEM_SEQ_ID
-JOIN order_header oh ON oi.ORDER_ID = oh.ORDER_ID
-JOIN return_status rs ON ri.RETURN_ID = rs.RETURN_ID AND ri.RETURN_ITEM_SEQ_ID = rs.RETURN_ITEM_SEQ_ID
-WHERE oh.PRODUCT_STORE_ID = 'SM_STORE' AND rs.STATUS_ID = 'RETURN_COMPLETED' 
+FROM order_header oh 
+JOIN order_item oi ON oh.order_id = oi.order_id
+JOIN return_item ri ON ri.ORDER_ID = oi.ORDER_ID AND ri.ORDER_ITEM_SEQ_ID = oi.ORDER_ITEM_SEQ_ID 
+JOIN return_header rh ON rh.RETURN_ID = ri.RETURN_ID
+JOIN return_status rs ON ri.RETURN_ID = rs.RETURN_ID AND ri.RETURN_ITEM_SEQ_ID = rs.RETURN_ITEM_SEQ_ID AND rs.STATUS_ID = 'RETURN_COMPLETED'
+WHERE ri.STATUS_ID = 'RETURN_COMPLETED' AND oh.PRODUCT_STORE_ID = 'SM_STORE'
 AND rh.RETURN_CHANNEL_ENUM_ID = 'ECOM_RTN_CHANNEL';
+
 ```
 
 ![Alt text](image.png)
+
+![alt text](image-1.png)

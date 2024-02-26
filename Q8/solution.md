@@ -5,6 +5,7 @@ Find all the orders whose two or more items are completed but the orders are sti
 ### SOLUTION:
 
 ```sql
+
 SELECT
     oi.ORDER_ID,
     COUNT(DISTINCT oi.ORDER_ITEM_SEQ_ID) AS COMPLETED_ITEMS
