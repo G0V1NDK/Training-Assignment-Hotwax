@@ -19,20 +19,24 @@ Get all the below fields
 ```sql
 
 SELECT
-    rh.RETURN_ID,
-    rh.ENTRY_DATE,
-    ra.RETURN_ADJUSTMENT_TYPE_ID,
-    ra.AMOUNT,
-    ra.COMMENTS,
-    ra.ORDER_ID,
-    oh.ORDER_DATE,
-    rh.RETURN_DATE,
+    rh.RETURN_ID, 
+    rh.ENTRY_DATE, 
+    ra.RETURN_ADJUSTMENT_TYPE_ID, 
+    ra.AMOUNT, 
+    ra.COMMENTS, 
+    ra.ORDER_ID, 
+    oh.ORDER_DATE, 
+    rh.RETURN_DATE, 
     oh.PRODUCT_STORE_ID
-FROM return_adjustment ra
-JOIN return_header rh ON ra.RETURN_ID = rh.RETURN_ID
-JOIN order_header oh ON ra.ORDER_ID = oh.ORDER_ID
-WHERE ra.RETURN_ADJUSTMENT_TYPE_ID = 'APPEASEMENT' AND EXTRACT(MONTH FROM rh.ENTRY_DATE) = "7";
-
+FROM
+    return_header rh
+JOIN
+    return_adjustment ra ON rh.RETURN_ID = ra.RETURN_ID
+JOIN
+    order_header oh ON ra.ORDER_ID = oh.ORDER_ID
+WHERE
+    RETURN_ADJUSTMENT_TYPE_ID = 'APPEASEMENT'
+    AND rh.RETURN_DATE BETWEEN '2023-07-01' AND '2023-07-31';
 
 ```
 

@@ -40,9 +40,8 @@ JOIN order_history oht ON oi.ORDER_ID = oht.ORDER_ID AND oi.ORDER_ITEM_SEQ_ID = 
 JOIN product p  ON oi.PRODUCT_ID = p.PRODUCT_ID 
 JOIN facility f ON oisg.FACILITY_ID = f.FACILITY_ID
 JOIN order_status os ON oh.ORDER_ID = os.ORDER_ID AND os.STATUS_ID = "ORDER_COMPLETED"
-WHERE EXTRACT(YEAR FROM os.status_datetime) = '2023' 
-AND EXTRACT(MONTH FROM os.status_datetime) = '8';
-
+WHERE oh.status_id = "ORDER_COMPLETED" AND 
+(os.STATUS_DATETIME BETWEEN '2023-08-01' AND '2023-08-31' );
 
 ```
 ![Alt text](image.png)

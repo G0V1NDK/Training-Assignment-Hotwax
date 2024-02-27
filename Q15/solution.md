@@ -6,13 +6,11 @@ Find all the orders that have more than one return.
 
 ```sql
 
-SELECT ri.ORDER_ID
-FROM return_item ri
-JOIN Order_Item oi ON ri.ORDER_ID = oi.ORDER_ID AND ri.ORDER_ITEM_SEQ_ID = oi.ORDER_ITEM_SEQ_ID
+SELECT ri.ORDER_ID, COUNT(DISTINCT ri.RETURN_ID) AS return_count FROM return_item ri 
+WHERE ri.order_id IS NOT NULL
 GROUP BY ri.ORDER_ID
-HAVING COUNT(DISTINCT ri.RETURN_ID) > 1;
-
+HAVING return_count > 1;
 
 ```
 
-![Alt text](image.png)
+![Alt text](image-1.png)
