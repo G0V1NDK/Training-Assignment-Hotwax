@@ -32,12 +32,11 @@ SELECT
     oh.ORDER_TYPE_ID,
     oh.PRODUCT_STORE_ID
 FROM order_header oh 
-JOIN order_item oi ON oi.order_id = oh.order_id 
+JOIN order_item oi ON oi.order_id = oh.order_id AND oi.status_id = 'ITEM_COMPLETED'
 JOIN order_status os ON os.order_id = oi.order_id AND os.order_item_seq_id = oi.order_item_seq_id AND os.status_id = 'ITEM_COMPLETED'
 JOIN product p ON p.product_id = oi.product_id 
-JOIN product_type pt ON pt.product_type_id = p.product_type_id
-WHERE oh.product_store_id = 'SM_STORE' AND pt.is_physical = 'Y' 
-AND oh.order_type_id = 'SALES_ORDER' AND oi.status_id = 'ITEM_COMPLETED';
+JOIN product_type pt ON pt.product_type_id = p.product_type_id AND pt.is_physical = 'Y'
+WHERE oh.product_store_id = 'SM_STORE' AND oh.order_type_id = 'SALES_ORDER';
 
 ```
 
