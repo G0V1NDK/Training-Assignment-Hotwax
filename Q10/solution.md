@@ -24,7 +24,7 @@ Fetch all the order items that are in the created status AND the order type shou
 
 ```sql
 
-SELECT
+SELECT 
     oi.ORDER_ID,
     p.PRODUCT_TYPE_ID,
     oi.ORDER_ITEM_SEQ_ID,
@@ -43,15 +43,26 @@ SELECT
     ps.POSTAL_CODE AS SHIP_POSTALCODE,
     ps.ADDRESS1 AS SHIP_ADDRESS1,
     ps.ADDRESS2 AS SHIP_ADDRESS2
-FROM order_header oh
-JOIN order_item oi ON oi.ORDER_ID = oh.ORDER_ID 
-JOIN product p ON oi.PRODUCT_ID = p.PRODUCT_ID 
-JOIN order_contact_mech ocm ON oi.ORDER_ID = ocm.ORDER_ID
-LEFT JOIN postal_address pb ON ocm.CONTACT_MECH_ID = pb.CONTACT_MECH_ID 
-LEFT JOIN postal_address ps ON ocm.CONTACT_MECH_ID = ps.CONTACT_MECH_ID 
-WHERE oi.STATUS_ID = 'ITEM_CREATED' 
-AND (ocm.CONTACT_MECH_PURPOSE_TYPE_ID = 'SHIPPING_LOCATION' OR ocm.CONTACT_MECH_PURPOSE_TYPE_ID = 'BILLING_LOCATION');
+FROM
+    order_header oh
+        JOIN
+    order_item oi ON oi.ORDER_ID = oh.ORDER_ID
+        AND oi.STATUS_ID = 'ITEM_CREATED'
+        JOIN
+    product p ON oi.PRODUCT_ID = p.PRODUCT_ID
+        JOIN
+    order_contact_mech ocm_s ON oi.ORDER_ID = ocm_s.ORDER_ID
+        AND ocm_s.CONTACT_MECH_PURPOSE_TYPE_ID = 'SHIPPING_LOCATION'
+        JOIN
+    order_contact_mech ocm_b ON oi.ORDER_ID = ocm_b.ORDER_ID
+        AND ocm_B.CONTACT_MECH_PURPOSE_TYPE_ID = 'BILLING_LOCATION'
+        JOIN
+    postal_address pb ON ocm_b.CONTACT_MECH_ID = pb.CONTACT_MECH_ID
+        JOIN
+    postal_address ps ON ocm_s.CONTACT_MECH_ID = ps.CONTACT_MECH_ID;
 
 ```
 
 ![Alt text](image.png)
+
+![Alt text](image-1.png)
