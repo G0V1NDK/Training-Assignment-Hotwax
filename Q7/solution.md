@@ -15,5 +15,5 @@ JOIN return_status rs ON rs.RETURN_ID = ri.RETURN_ID AND ri.RETURN_ITEM_SEQ_ID =
 GROUP BY pa.CITY;
 
 ```
-
+![Alt text](https://github.com/G0V1NDK/Training-Assignment-Hotwax/blob/SQL-Assignment-3/Q7/image-1.png)
 ![Alt text](image.png)
