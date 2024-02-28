@@ -5,13 +5,19 @@
 
 ```sql
 
-SELECT ri.ORDER_ID, COUNT(DISTINCT ri.RETURN_ID) AS TOTAL_RETURNS FROM return_header rh
-JOIN return_item ri ON ri.RETURN_ID = rh.RETURN_ID
-LEFT JOIN return_status rs ON rs.RETURN_ID = ri.RETURN_ID AND rs.RETURN_ITEM_SEQ_ID = ri.RETURN_ITEM_SEQ_ID
-WHERE rs.STATUS_DATETIME >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-GROUP BY ri.ORDER_ID
-HAVING TOTAL_RETURNS = 1;
+SELECT 
+    COUNT(*)
+FROM
+    (SELECT 
+        ri.ORDER_ID, COUNT(DISTINCT ri.RETURN_ID) AS TOTAL_RETURNS
+    FROM
+        return_header rh
+    JOIN return_item ri ON ri.RETURN_ID = rh.RETURN_ID
+    WHERE
+        rh.entry_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+            AND ri.ORDER_ID IS NOT NULL
+    GROUP BY ri.ORDER_ID
+    HAVING TOTAL_RETURNS = 1) AS TOTAL_ORDERS;
 
 ```
-
-![Alt text](image.png)
+![image](https://github.com/G0V1NDK/Training-Assignment-Hotwax/assets/83280091/2e7ca8d2-76fb-4840-bbd8-31cc70a2e7c4)
