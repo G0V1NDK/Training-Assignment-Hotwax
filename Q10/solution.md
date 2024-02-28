@@ -59,7 +59,8 @@ FROM
         JOIN
     postal_address pb ON ocm_b.CONTACT_MECH_ID = pb.CONTACT_MECH_ID
         JOIN
-    postal_address ps ON ocm_s.CONTACT_MECH_ID = ps.CONTACT_MECH_ID;
+    postal_address ps ON ocm_s.CONTACT_MECH_ID = ps.CONTACT_MECH_ID
+    WHERE oh.order_type_id = 'SALES_ORDER';
 
 ```
 
