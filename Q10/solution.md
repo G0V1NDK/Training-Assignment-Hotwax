@@ -55,7 +55,7 @@ FROM
         AND ocm_s.CONTACT_MECH_PURPOSE_TYPE_ID = 'SHIPPING_LOCATION'
         JOIN
     order_contact_mech ocm_b ON oi.ORDER_ID = ocm_b.ORDER_ID
-        AND ocm_B.CONTACT_MECH_PURPOSE_TYPE_ID = 'BILLING_LOCATION'
+        AND ocm_b.CONTACT_MECH_PURPOSE_TYPE_ID = 'BILLING_LOCATION'
         JOIN
     postal_address pb ON ocm_b.CONTACT_MECH_ID = pb.CONTACT_MECH_ID
         JOIN
