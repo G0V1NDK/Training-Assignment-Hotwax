@@ -20,9 +20,10 @@ SELECT
 	opp.PAYMENT_METHOD_TYPE_ID as PAYMENT_METHOD,
 	oid.ID_VALUE as SHOPIFY_ORDER_NAME
 FROM order_header oh 
-JOIN order_identification oid ON oid.order_id = oh.order_id AND oid.ORDER_IDENTIFICATION_TYPE_ID = 'SHOPIFY_ORD_NAME' 
+JOIN order_identification oid ON oid.order_id = oh.order_id AND oid.ORDER_IDENTIFICATION_TYPE_ID = 'SHOPIFY_ORD_NAME' AND oid.thru_date IS NULL 
 JOIN order_payment_preference opp ON opp.order_id = oh.order_id
 WHERE oh.order_type_id = 'SALES_ORDER' AND oh.status_id = 'ORDER_CREATED';
+
 ```
 
 ![Alt text](image.png)
