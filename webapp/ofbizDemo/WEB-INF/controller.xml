@@ -49,6 +49,14 @@ under the License.
         <response name="success" type="view" value="main"/>
     </request-map>
 
+    <!-- maps to find new order -->
+    <request-map uri="FindNewOrder">
+        <security https="true" auth="true"/>
+        <response name="success" type="view" value="FindNewOrder"/>
+    </request-map>
+
     <!-- View Mappings -->
     <view-map name="main" type="screen" page="component://ofbizDemo/widget/OfbizDemoScreens.xml#main"/>
+    <view-map name="FindNewOrder" type="screen" page="component://ofbizDemo/widget/OfbizDemoScreens.xml#FindNewOrder"/>
+
 </site-conf>

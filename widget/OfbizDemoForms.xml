@@ -27,4 +27,36 @@ under the License.
         <field name="SubmitButton" title="submit" ><submit button-type="button"/> </field>
     </form>
 
+    <form name="FindNewOrder" type="single" target="FindNewOrder" default-entity-name="NewOrderHeader">
+        <field name="noConditionFind"><hidden value="Y"/> <!-- if this isn't there then with all fields empty no query will be done --></field>
+        <field name="orderId" title="${uiLabelMap.orderId}"><text-find/></field>
+        <field name="statusId" title="${uiLabelMap.statusId}"><text-find/></field>
+        <field name="orderName" title="${uiLabelMap.orderName}"><text-find/></field>
+        <field name="orderDate" title="${uiLabelMap.orderDate}"><text-find/></field>
+        <field name="description" title="${uiLabelMap.description}"><text-find/></field>
+        <field name="grandTotal" title="${uiLabelMap.grandTotal}"><text-find/></field>
+
+        <field name="searchButton" title="${uiLabelMap.CommonFind}" widget-style="smallSubmit"><submit button-type="button" image-location="/images/icons/magnifier.png"/></field>
+    </form>
+
+    <form name="ListNewOrder" type="list" target="ListNewOrder" list-name="listIt" paginate-target="FindNewOrder" default-entity-name="NewOrderHeader" separate-columns="true"
+          odd-row-style="alternate-row" header-row-style="header-row-2" default-table-style="basic-table hover-bar">
+        <!-- Preparing search results for user query by using OFBiz stock service to perform find operations on a single entity or view entity -->
+        <actions>
+            <service service-name="performFind" result-map="result" result-map-list="listIt">
+                <field-map field-name="inputFields" from-field="ofbizDemoCtx"/>
+                <field-map field-name="entityName" value="NewOrderHeader"/>
+                <field-map field-name="orderBy" from-field="parameters.sortField"/>
+                <field-map field-name="viewIndex" from-field="viewIndex"/>
+                <field-map field-name="viewSize" from-field="viewSize"/>
+            </service>
+        </actions>
+        <field name="orderId" title="${uiLabelMap.orderId}"><display/></field>
+        <field name="statusId" title="${uiLabelMap.statusId}"><display/></field>
+        <field name="orderName" title="${uiLabelMap.orderName}"><display/></field>
+        <field name="orderDate" title="${uiLabelMap.orderDate}"><display/></field>
+        <field name="description" title="${uiLabelMap.description}"><display/></field>
+        <field name="grandTotal" title="${uiLabelMap.grandTotal}"><display/></field>
+    </form>
+
 </forms>
