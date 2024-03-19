@@ -59,7 +59,7 @@ under the License.
         <prim-key field="orderId"/>
         <prim-key field="orderItemSeqId"/>
 
-        <relation type="many" fk-name="ORDER_HDR_ID" rel-entity-name="NewOrderHeader">
+        <relation type="one" fk-name="ORDER_HDR_ID" rel-entity-name="NewOrderHeader">
             <key-map field-name="orderId" />
         </relation>
     </entity>

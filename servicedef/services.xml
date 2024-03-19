@@ -44,7 +44,12 @@ under the License.
         <override name="comments" optional="true"/>
     </service>
 
-
+    <service name="createNewOrderHeader" default-entity-name="NewOrderHeader" engine="java" invoke="createNewOrderHeader" location="com.companyname.ofbizdemo.services.OfbizDemoServices" auth="true">
+        <description>Creates a new Order entity using java service</description>
+        <auto-attributes include="pk" mode="OUT" optional="false"/>
+        <auto-attributes include="nonpk" mode="IN" optional="true"/>
+        <override name="comments" optional="true"/>
+    </service>
 
 
 </services>

@@ -49,6 +49,13 @@ under the License.
         <response name="success" type="view" value="main"/>
     </request-map>
 
+
+    <request-map uri="createNewOrderHeader">
+        <security auth="true" https="true"/>
+        <event type="service" invoke="createNewOrderHeader"/>
+        <response name="success" type="view" value="main"/>
+    </request-map>
+
     <!-- maps to find new order -->
     <request-map uri="FindNewOrder">
         <security https="true" auth="true"/>
