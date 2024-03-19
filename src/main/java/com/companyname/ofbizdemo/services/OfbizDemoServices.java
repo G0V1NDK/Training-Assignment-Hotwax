@@ -26,7 +26,7 @@ public class OfbizDemoServices {
 
             result.put("orderId", newOrderHeader.getString("orderId"));
 
-//            Debug.log("MapValue is: " + result.get("orderId"));
+//            Debug.log("MapValue is ====>  " + result.get("orderId"));
 ////            System.out.println("Delegator: " + delegator);
 ////            System.out.println("orderHeader" + newOrderHeader);
 //
