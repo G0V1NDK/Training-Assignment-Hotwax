@@ -49,10 +49,17 @@ under the License.
         <response name="success" type="view" value="main"/>
     </request-map>
 
-
+<!--java request-map (newOrderHader)-->
     <request-map uri="createNewOrderHeader">
         <security auth="true" https="true"/>
         <event type="service" invoke="createNewOrderHeader"/>
+        <response name="success" type="view" value="main"/>
+    </request-map>
+
+<!--groovy request-map(newOrderHeader)-->
+    <request-map uri="createNewOrderHeaderGroovy">
+        <security https="true" auth="true"/>
+        <event type="service" invoke="createOfbizDemoByGroovyService"/>
         <response name="success" type="view" value="main"/>
     </request-map>
 

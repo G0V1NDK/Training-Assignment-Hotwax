@@ -44,12 +44,21 @@ under the License.
         <override name="comments" optional="true"/>
     </service>
 
-    <service name="createNewOrderHeader" default-entity-name="NewOrderHeader" engine="java" invoke="createNewOrderHeader" location="com.companyname.ofbizdemo.services.OfbizDemoServices" auth="true">
+    <service name="createNewOrderHeader" default-entity-name="NewOrderHeader" engine="java" invoke="createNewOrderHeader" location="com.companyname.ofbizdemo.OfbizDemoServices" auth="true">
         <description>Creates a new Order entity using java service</description>
         <auto-attributes include="pk" mode="OUT" optional="false"/>
         <auto-attributes include="nonpk" mode="IN" optional="true"/>
         <override name="comments" optional="true"/>
     </service>
 
+    <service name="createNewOrderHeaderGroovy" default-entity-name="NewOrderHeader" engine="groovy" invoke="createNewOrderHeaderGroovy" location="component://ofbizDemo/src/main/groovy/com/companyname/ofbizdemo/OfbizDemoServices.groovy" auth="true">
+    <description>Creates a new Order entity using groovy service</description>
+        <auto-attributes include="pk" mode="OUT" optional="false"/>
+        <auto-attributes include="nonpk" mode="IN" optional="true"/>
+        <override name="statusId" optional="false"/>
+        <override name="comments" optional="true"/>
+    </service>
 
 </services>
+
+
