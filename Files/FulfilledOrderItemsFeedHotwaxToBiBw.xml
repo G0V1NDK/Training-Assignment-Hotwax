@@ -1,0 +1,201 @@
+    <!--Service to create a BI/BW feed-->
+    <service verb="process" noun="FulfilledOrderItemsFeedHotwaxToBiBw" authenticate="anonymous-all" transaction-timeout="7200">
+        <in-parameters>
+            <parameter name="payload" required="true" type="List"/>
+        </in-parameters>
+<!--        <description>Service to create a BI/BW feed</description>-->
+<!--        <implements service="org.moqui.impl.SystemMessageServices.consume#SystemMessage"/>-->
+        <actions>
+            <!--Fetch the file-->
+            <!--<entity-find-one entity-name="moqui.service.message.SystemMessageAndType" value-field="systemMessage"/>
+
+            <set field="fileText" from="ec.resource.getLocationReference(systemMessage.messageText).getText()"/>
+            <set field="payload" from="org.moqui.impl.context.ContextJavaUtil.jacksonMapper.readValue(fileText, List.class)"/>
+            <if condition="!payload">
+                <return type="warning" message="System message [${systemMessageId}] for Type [${systemMessage?.systemMessageTypeId}] has messageText [${systemMessage.messageText}], received null data."/>
+            </if>-->
+
+            <set field="orders" from="[]"/>
+            <iterate list="payload" entry="order">
+                <set field="orderItemList" from="[]"/>
+                <iterate list="order.shipments" entry="shipment">
+                    <iterate list="shipment.shipmentItems" entry="shipmentItem">
+                        <if condition="shipmentItem.parentFacilityTypeId == 'PHYSICAL_STORE'">
+                            <set field="orderMap" from="[:]"/>
+                            <set field="orderMap.'Item Number'" from="ec.l10n.parseNumber(shipmentItem.orderItemSeqId, '') ?: '101'" type="Integer"/>
+                            <set field="orderMap.'EAN/UPC'" from="shipmentItem.internalName"/>
+                            <set field="orderMap.Qty" from="shipmentItem.shippedQuantity" default-value="${shipmentItem.itemQuantity}"/>
+                            <set field="orderMap.MSRP" from="shipmentItem.unitPrice"/>
+                            <set field="itemAmount" from="shipmentItem.unitPrice * shipmentItem.itemQuantity"/>
+
+                            <!--#### TODO: Need to refactor into Double-->
+                            <set field="taxAmount" value="0" type="Integer"/>
+<!--                            <log message="================= taxAmount1: ${taxAmount}"/>-->
+                            <set field="soldPrice" from="itemAmount"/>
+<!--                            <log message="================= soldPrice: ${soldPrice}"/>-->
+
+                            <iterate list="shipmentItem.orderItemAdjustments" entry="orderItemAdjustment">
+                                <if condition="orderItemAdjustment.orderAdjustmentTypeId == 'EXT_PROMO_ADJUSTMENT'">
+                                    <set field="soldPrice" from="soldPrice + orderItemAdjustment.amount"/>
+                                </if>
+                                <if condition="orderItemAdjustment.orderAdjustmentTypeId == 'SALES_TAX'">
+                                    <set field="taxAmount" from="taxAmount + orderItemAdjustment.amount"/>
+<!--                                    <log message="================= taxAmount: ${taxAmount}"/>-->
+                                </if>
+                            </iterate>
+                            <set field="orderMap.'Sold Price'" from="soldPrice"/>
+                            <set field="orderMap.Tax" from="taxAmount"/>
+                            <set field="orderMap.'Customer Paid'" from="soldPrice + taxAmount"/>
+                            <set field="orderMap.'Smaregi Store No'" from="shipmentItem.facilityExternalId"/>
+
+                            <log message="================= orderMap[1]: ${orderMap}"/>
+                            <set field="orderItemList" from="orderItemList + orderMap"/>
+                        </if>
+                    </iterate>
+                </iterate>
+
+                <!--Check whether the order item list contains valid order item -->
+                <if condition="orderItemList.size() == 0">
+                    <log message="No valid store order items found for the orderId: ${order.orderId}" level="info"/>
+                    <continue/>
+                </if>
+
+                <log message="==== orderItemList: ${orderItemList.get(0)}"/>
+                <!--Iterate all the valid item list and append header data-->
+                <iterate list="orderItemList" entry="orderItem">
+                    <set field="orderHeaderMap" from="[:]"/>
+                    <set field="orderHeaderMap.'Order Date'" from="ec.l10n.format(order.orderDate, 'yyyy-MM-dd')"/>
+                    <set field="orderHeaderMap.'Order Number'" from="order.orderName"/>
+                    <script>
+                        orderHeaderMap.putAll(orderItem)
+                    </script>
+                    <set field="orderHeaderMap.'Material ID'" value="" type="String"/>
+                    <set field="orderHeaderMap.'Freight'" value="0" type="Integer"/>
+                    <!--TODO: multiple payments to be sent as '-' separated values-->
+                    <set field="payments" from="order.payments"/>
+                    <iterate list="payments" entry="payment">
+                        <set field="orderHeaderMap.'Tender Type'" from="payment.paymentMethodTypeId"/>
+                    </iterate>
+
+                    <log message="================= orderHeaderMap: ${orderHeaderMap}"/>
+                    <!--Added item level details-->
+                    <set field="orders" from="orders + orderHeaderMap"/>
+                </iterate>
+                <log message="================= orders[1]: ${orders}"/>
+
+
+                <!--added extra row for shipping charges here-->
+                <!--Shipping adjustment-->
+                <iterate list="order.orderAdjustments" entry="orderAdjustments">
+                    <if condition="orderAdjustments.orderAdjustmentTypeId == 'SHIPPING_CHARGES'">
+                        <!--Created new map for each order adjustment-->
+                        <set field="adjustmentMap" from="[:]"/>
+                        <!--better approach?-->
+                        <script>
+                            adjustmentMap.putAll(orders.get(orders.size() - 1))
+                            lastItemNumber = orders.get(orders.size() - 1).get("Item Number")
+                            lastItemNumber++
+                        </script>
+                        <log message="======= lastItemNumber: ${lastItemNumber}"/>
+                        <log message="======= adjustmentMap[1]: ${adjustmentMap}"/>
+                        <!--sales adjustment-->
+                        <iterate list="order.orderAdjustments" entry="adjustment">
+                            <if condition="adjustment.orderAdjustmentTypeId == 'SHIPPING_SALES_TAX' &amp;&amp; adjustment.originalAdjustmentId == orderAdjustments.orderAdjustmentId">
+                                <set field="adjustmentMap.'Item Number'" from="lastItemNumber"/>
+                                <set field="adjustmentMap.MSRP" from="orderAdjustments.amount"/>
+                                <set field="adjustmentMap.'Sold Price'" from="orderAdjustments.amount"/>
+                                <set field="adjustmentMap.Tax" from="adjustment.amount"/>
+                                <set field="adjustmentMap.'Customer Paid'" from="orderAdjustments.amount + adjustment.amount"/>
+                                <!--This will hardcoded as this is the default value-->
+                                <set field="adjustmentMap.'EAN/UPC'" value="4550236653503"/>
+                                <!--Add only when the shipping + sales tax is grouped-->
+                                <set field="orders" from="orders + adjustmentMap"/>
+                            </if>
+                        </iterate>
+                    </if>
+                </iterate>
+            </iterate>
+            <log message="================= ORDER LIST: ${orders}"/>
+
+            <!--If the no data is found return-->
+            <set field="nowDate" from="ec.user.nowTimestamp"/>
+            <if condition="!orders">
+                <return message="No eligible fulfilled order items found at ${nowDate}, not generating the HotWax to BIBW Feed file."/>
+            </if>
+
+            <!--Add data in a new CSV file-->
+            <entity-find-one entity-name="moqui.basic.Enumeration" value-field="enumValue">
+<!--                <field-map field-name="enumId" from="systemMessageTypeId"/>-->
+                <field-map field-name="enumId" value="HotwaxToBiBwFulfilledOrderItemsFeed"/>
+            </entity-find-one>
+
+            <if condition="enumValue &amp;&amp; enumValue.relatedEnumId">
+                <entity-find-one entity-name="moqui.service.message.SystemMessageType" value-field="relatedSystemMessageType">
+                    <field-map field-name="systemMessageTypeId" from="enumValue.relatedEnumId"/>
+                </entity-find-one>
+
+                <if condition="!relatedSystemMessageType"><log level="warn" message="Could not find SystemMessageType with ID ${enumValue.relatedEnumId}, not producing related system message."/></if>
+                <else>
+                    <log level="warn" message="Related SystemMessageType to produce for ${systemMessageTypeId} not defined, not producing related system message."/>
+                </else>
+            </if>
+
+            <set field="csvFilePathRef" from="ec.resource.expand(relatedSystemMessageType.sendPath, null,
+                [contentRoot: ec.user.getPreference('mantle.content.root') ?: 'dbresource://datamanager', date:ec.l10n.format(nowDate, 'yyyy-MM-dd'), dateTime:ec.l10n.format(nowDate, 'yyyy-MM-dd-HH-mm-ss-SSS'),
+                 productStoreId:productStoreId], false)"/>
+            <set field="csvFilePath" from="ec.resource.getLocationReference(csvFilePathRef).getUri().getPath()"/>
+
+            <!--Create the CSV file-->
+            <script>
+                import org.apache.commons.csv.CSVFormat
+                import org.apache.commons.csv.CSVPrinter
+                import java.nio.file.Files
+                import java.nio.file.Paths
+                import java.nio.charset.StandardCharsets
+
+                File csvFile = new File(csvFilePath)
+                if (!csvFile.parentFile.exists()) {
+                    csvFile.parentFile.mkdirs()
+                }
+
+                try {
+                    // Try-with-resources for BufferedWriter
+                    Files.newBufferedWriter(Paths.get(csvFilePath), StandardCharsets.UTF_8).withCloseable { writer ->
+                    // Try-with-resources for CSVPrinter
+                        new CSVPrinter(writer, CSVFormat.DEFAULT).withCloseable { csvPrinter ->
+
+                        def csvHeaders = null
+            </script>
+
+            <iterate list="orders" entry="order">
+                <log message="============== order: ${order}"/>
+
+                <script>
+                    // Set headers only once
+                    if (csvHeaders == null) {
+                        csvHeaders = orders[0].keySet().collect { it as String }
+                        csvPrinter.printRecord(csvHeaders)
+                    }
+
+                    // Write each row
+                    csvPrinter.printRecord(csvHeaders.collect { key -> order[key] ?: "" })
+                    }
+                    }
+                </script>
+            </iterate>
+            <script>
+                } catch (Exception e) {
+                    ec.message.addError("Error preparing the HotWax to BIBW Feed file ${e}")
+                }
+            </script>
+
+            <log message="=========== [systemMessageTypeId:${relatedSystemMessageType.systemMessageTypeId}, systemMessageRemoteId:${systemMessageRemoteId},
+                messageText:${csvFilePath}]"/>
+
+            <service-call name="org.moqui.impl.SystemMessageServices.queue#SystemMessage"
+                          in-map="[systemMessageTypeId:relatedSystemMessageType.systemMessageTypeId, systemMessageRemoteId:systemMessageRemoteId,
+                messageText:csvFilePath]" out-map="fulfilledOrderItemMsg"/>
+
+<!--            <return message=""/>-->
+        </actions>
+    </service>
