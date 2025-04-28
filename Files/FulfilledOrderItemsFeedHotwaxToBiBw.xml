@@ -17,6 +17,7 @@
 
             <set field="orders" from="[]"/>
             <iterate list="payload" entry="order">
+                <set field="facilityIdsList" from="[]"/>
                 <set field="orderItemList" from="[]"/>
                 <iterate list="order.shipments" entry="shipment">
                     <iterate list="shipment.shipmentItems" entry="shipmentItem">
@@ -47,6 +48,7 @@
                             <set field="orderMap.Tax" from="taxAmount"/>
                             <set field="orderMap.'Customer Paid'" from="soldPrice + taxAmount"/>
                             <set field="orderMap.'Smaregi Store No'" from="shipmentItem.facilityExternalId"/>
+                            <set field="facilityIdsList" from="facilityIdsList + shipmentItem.facilityExternalId"/>
 
                             <log message="================= orderMap[1]: ${orderMap}"/>
                             <set field="orderItemList" from="orderItemList + orderMap"/>
@@ -60,7 +62,6 @@
                     <continue/>
                 </if>
 
-                <log message="==== orderItemList: ${orderItemList.get(0)}"/>
                 <!--Iterate all the valid item list and append header data-->
                 <iterate list="orderItemList" entry="orderItem">
                     <set field="orderHeaderMap" from="[:]"/>
@@ -70,7 +71,7 @@
                         orderHeaderMap.putAll(orderItem)
                     </script>
                     <set field="orderHeaderMap.'Material ID'" value="" type="String"/>
-                    <set field="orderHeaderMap.'Freight'" value="0" type="Integer"/>
+                    <set field="orderHeaderMap.'Freight'" value="0"/>
                     <!--TODO: multiple payments to be sent as '-' separated values-->
                     <set field="payments" from="order.payments"/>
                     <iterate list="payments" entry="payment">
@@ -83,6 +84,7 @@
                 </iterate>
                 <log message="================= orders[1]: ${orders}"/>
 
+                <log message="==== facilityIdsList: ${facilityIdsList}"/>
 
                 <!--added extra row for shipping charges here-->
                 <!--Shipping adjustment-->
@@ -106,6 +108,9 @@
                                 <set field="adjustmentMap.'Sold Price'" from="orderAdjustments.amount"/>
                                 <set field="adjustmentMap.Tax" from="adjustment.amount"/>
                                 <set field="adjustmentMap.'Customer Paid'" from="orderAdjustments.amount + adjustment.amount"/>
+                                <set field="smaregiStoreNo" from="facilityIdsList.remove(0)"/>
+                                <log message="==== smaregiStoreNo: ${smaregiStoreNo}"/>
+                                <set field="adjustmentMap.'Smaregi Store No'" from="smaregiStoreNo"/>
                                 <!--This will hardcoded as this is the default value-->
                                 <set field="adjustmentMap.'EAN/UPC'" value="4550236653503"/>
                                 <!--Add only when the shipping + sales tax is grouped-->
