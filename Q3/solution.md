@@ -1,0 +1,18 @@
+### Question
+Fetch the order id and contact mech id for the shipping address of the orders completed in October of 2023.
+
+### SOLUTION:
+
+```sql
+SELECT oh.order_id, ocm.contact_mech_id 
+FROM order_header oh 
+INNER JOIN order_contact_mech ocm ON oh.order_id = ocm.order_id AND ocm.contact_mech_purpose_type_id = 'SHIPPING_LOCATION' 
+INNER JOIN order_status os ON os.order_id = oh.order_id AND os.status_id = 'ORDER_COMPLETED' 
+WHERE oh.status_id = 'ORDER_COMPLETED'
+AND DATE_FORMAT(os.status_datetime, '%Y-%m') = '2023-10';
+
+```
+
+![Alt text](image.png)
+
+![alt text](image-1.png)
